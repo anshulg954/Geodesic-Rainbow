@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" crossorigin="anonymous">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <title>Geodesic Rainbow By Anshul Gupta</title>>
+    <style>
+      body{
+        background:white;
+      }
+      #subdivision {
+      position: absolute;
+      }
+    div{
+      display: flex;
+      }
+    output{
+      margin-left:2rem;
+    }
+    span{
+      margin-left: 8rem
+    }
+    footer{
+      background-color: #343a40;
+      color: whitesmoke;
+    }
+  </style>  
+</head>
+  <body>
+    <header>
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="#">Anshul Gupta</a>
+        <div class="collapse navbar-collapse mt-2 mt-md-0" id="navbarCollapse">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="geodesic_rainbow.html">Home</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+    <main role="main" class="container">
+      <h1 class="mt-5">Geodesic Rainbow</h1>
+      <p class="lead">A geodesic dome is a hemispherical thin-shell structure (lattice-shell) based on a geodesic polyhedron. The triangular elements of the dome are structurally rigid and distribute the structural stress throughout the structure, making geodesic domes able to withstand very heavy loads for their size.</p>
+      <p>I have tried to implement this using the study given at <a href="https://observablehq.com/@mbostock/geodesic-rainbow">Observable by Mike Bostock</a>, the founder of observablehq.</p>
+      <div>
+        <div id="subdivision">
+          <label>Test different geodesic domes with</label>
+          <button class="btn btn-sucess my-2 my-sm-0" type="submit">
+          <select name="dropdown">
+            <option value=1>Pattern V</option>
+            <option value=2>Pattern I</option>
+            <option value=3>Pattern B</option>
+            <option value=4>Pattern G</option>
+            <option value=5>Pattern Y</option>
+            <option value=6>Pattern O</option>
+            <option value=7>Pattern R</option>
+            <option value=8>Pattern Perfect</option>
+            <option value=9>Pattern Normal Speed</option>
+            <option value=10>Pattern Favourite One</option>
+            <option value=20>Pattern More Faster</option>
+            <option value=20>Pattern The Fastest</option>
+          </select>
+        </button><br>
+        </div>
+        <div style="margin-top: 2rem;">
+        </div>
+        <div style="margin-left: 50rem;">
+          <output name="subdivision"></output>
+        </div>
+      </div>
+    </main>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://d3js.org/d3.geodesic.v0.min.js"></script>
+<!--Geodesic Script to draw the polygons and rotate them-->
+<script>
+var width = 1000,
+    height = 500;
+var speed = [.001, 0.035],
+    time_now = Date.now();
+var projection = d3.geo.orthographic()
+    .scale(height / 2 - 10)
+var canvas = d3.select("body")
+            .append("canvas")
+            .attr("width", width)
+            .attr("height", height);
+var context = canvas.node().getContext("2d");
+context.strokeStyle = "#000";
+context.lineWidth = 1.5;
+var faces;
+var output = d3.select("output");
+var input = d3.select("select")
+    .on("change", function() {geodesic(+this.value); })
+    .each(function() { geodesic(+this.value); });
+
+d3.timer(function() {
+  var time = Date.now() - time_now;
+  projection.rotate([time * speed[0], time * speed[1]]);
+  redraw();
+});
+
+function redraw() {
+  context.clearRect(0, 0, width, height);
+
+  faces.forEach(function(d) {
+    d.polygon[0] = projection(d[0]);
+    d.polygon[1] = projection(d[1]);
+    d.polygon[2] = projection(d[2]);
+    if (d.visible = d.polygon.area() > 0) {
+      context.fillStyle = d.fill;
+      context.beginPath();
+      drawTriangle(d.polygon);
+      context.fill();
+    }
+  });
+
+  context.beginPath();
+  faces.forEach(function(d) {
+    if (d.visible) {
+      drawTriangle(d.polygon);
+    }
+  });
+  context.stroke();
+}
+
+function drawTriangle(triangle) {
+  context.moveTo(triangle[0][0], triangle[0][1]);
+  context.lineTo(triangle[1][0], triangle[1][1]);
+  context.lineTo(triangle[2][0], triangle[2][1]);
+  context.closePath();
+}
+
+function geodesic(subdivision) {
+  faces = d3.geodesic.polygons(subdivision).map(function(d) {
+    d = d.coordinates[0];
+    d.pop(); 
+    d.fill = d3.hsl(d[0][0], 2, .5) + "";
+    d.polygon = d3.geom.polygon(d.map(projection));
+    return d;
+  });
+  redraw();
+}  
+</script>
+<div class="lead mt-md-0">
+  This is the obtained pattern depending on our input value from 1-20. More of such can be formed depending upon the speed and polygons we wish to have in our webpage using d3js. 
+</div>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <footer class="footer">
+      <div class="container">
+        <span>
+          Check me out at:
+        </span>
+        <span>
+        <a href="https://www.linkedin.com/in/anshul-gupta-64886a185/" title="LinkedIn" class="fab fa-linkedin">Anshul Gupta</a>
+      </span>
+      <span>
+        <a href="https://www.github.com/anshulg954" title="Github" class="fab fa-github">anshulg954</a>
+      </span>
+      <span>
+        <a href="https://www.hackerrank.com/anshulg954" title="HackerRank" class="fab fa-hackerrank">anshulg954</a>
+      </span>
+      </div>
+    </footer>
+  </body>
+</html>
